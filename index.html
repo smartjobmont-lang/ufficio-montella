@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ufficio Smart Financial Montella</title>
+    <!-- Tailwind CSS per la grafica mobile -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome per le icone -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Ottimizzazione per tap su smartphone */
+        button, a, input, select, textarea { touch-action: manipulation; }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen flex flex-col pb-10">
+
+    <!-- HEADER MOBILE -->
+    <header class="bg-slate-900 text-white p-4 sticky top-0 z-40 shadow-md">
+        <div class="max-w-md mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="bg-blue-600 w-10 h-10 rounded-xl flex items-center justify-center text-white shadow">
+                    <i class="fa-solid fa-briefcase text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="text-base font-bold leading-none">Ufficio Montella</h1>
+                    <p class="text-[11px] text-slate-400 mt-1">Gestione Appuntamenti</p>
+                </div>
+            </div>
+            <button onclick="esportaCSV()" title="Esporta Excel" class="bg-slate-800 hover:bg-slate-700 active:bg-slate-900 text-emerald-400 p-2.5 rounded-xl border border-slate-700 transition">
+                <i class="fa-solid fa-file-excel text-base"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER MOBILE -->
+    <main class="max-w-md mx-auto p-4 w-full flex-1 space-y-5">
+
+        <!-- FORM DI INSERIMENTO -->
+        <section class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+            <h2 class="text-sm font-bold text-slate-900 mb-3 flex items-center gap-2">
+                <i class="fa-solid fa-calendar-plus text-blue-600"></i> Nuovo Appuntamento
+            </h2>
+
+            <form id="app-form" onsubmit="salvaAppuntamento(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Nome e Cognome Cliente</label>
+                    <input type="text" id="cliente" required placeholder="Es. Mario Rossi"
+                        class="w-full p-3 text-sm border border-slate-300 rounded-xl bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none transition">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Telefono Cliente (Opzionale per WhatsApp)</label>
+                    <input type="tel" id="telefono" placeholder="Es. 3331234567"
+                        class="w-full p-3 text-sm border border-slate-300 rounded-xl bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none transition">
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Data</label>
+                        <input type="date" id="data" required
+                            class="w-full p-3 text-sm border border-slate-300 rounded-xl bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Ora</label>
+                        <input type="time" id="ora" required
+                            class="w-full p-3 text-sm border border-slate-300 rounded-xl bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none transition">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Tipo Pratica</label>
+                        <select id="tipo" class="w-full p-3 text-sm border border-slate-300 rounded-xl bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none transition">
+                            <option value="Cessione del Quinto">Cessione del Quinto</option>
+                            <option value="Prestito Personale">Prestito Personale</option>
+                            <option value="Gestione CUD / Fiscale">Gestione CUD / Fiscale</option>
+                            <option value="Consulenza Generica">Consulenza Generica</option>
+                            <option value="Altro">Altro</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Pagamento</label>
+                        <select id="statoPagamento" class="w-full p-3 text-sm border border-slate-300 rounded-xl bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none transition">
+                            <option value="Da Pagare">Da Pagare</option>
+                            <option value="Pagato">Pagato</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Note Pratica / Documenti</label>
+                    <textarea id="note" rows="2" placeholder="Doc mancanti, dettagli..."
+                        class="w-full p-3 text-sm border border-slate-300 rounded-xl bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none transition"></textarea>
+                </div>
+
+                <button type="submit"
+                    class="w-full bg-blue-600 active:bg-blue-700 text-white font-bold p-3.5 rounded-xl text-sm shadow-md transition flex items-center justify-center gap-2 mt-2">
+                    <i class="fa-solid fa-plus"></i> Salva in Agenda
+                </button>
+            </form>
+        </section>
+
+        <!-- AGENDA APPUNTAMENTI -->
+        <section class="space-y-3">
+            <div class="flex justify-between items-center px-1">
+                <h2 class="text-sm font-bold text-slate-900">Appuntamenti in Agenda</h2>
+                <span id="badge-totale" class="text-xs bg-blue-100 text-blue-800 font-semibold px-2.5 py-1 rounded-full">0</span>
+            </div>
+
+            <div id="lista-appuntamenti" class="space-y-3">
+                <!-- Appuntamenti inseriti qui via JS -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        let appuntamenti = JSON.parse(localStorage.getItem('ufficio_montella_app')) || [];
+
+        // Data di oggi automatica
+        document.getElementById('data').valueAsDate = new Date();
+
+        function salvaAppuntamento(e) {
+            e.preventDefault();
+
+            const nuovo = {
+                id: Date.now(),
+                cliente: document.getElementById('cliente').value.trim(),
+                telefono: document.getElementById('telefono').value.trim(),
+                data: document.getElementById('data').value,
+                ora: document.getElementById('ora').value,
+                tipo: document.getElementById('tipo').value,
+                statoPagamento: document.getElementById('statoPagamento').value,
+                note: document.getElementById('note').value.trim(),
+                completato: false
+            };
+
+            appuntamenti.push(nuovo);
+            aggiornaEGuarda();
+            
+            document.getElementById('app-form').reset();
+            document.getElementById('data').valueAsDate = new Date();
+        }
+
+        function generaGoogleCalendarUrl(app) {
+            const start = `${app.data.replace(/-/g, '')}T${app.ora.replace(':', '')}00`;
+            const title = encodeURIComponent(`${app.tipo} - ${app.cliente}`);
+            const details = encodeURIComponent(`Stato Pagamento: ${app.statoPagamento}\nNote: ${app.note || 'Nessuna'}`);
+            const location = encodeURIComponent('Studio Smart Financial, Montella');
+            return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${start}/${start}&details=${details}&location=${location}`;
+        }
+
+        function apriWhatsApp(app) {
+            let msg = `Ciao ${app.cliente}, ti ricordiamo l'appuntamento presso lo Studio Smart Financial a Montella il ${app.data} alle ore ${app.ora} per la pratica: *${app.tipo}*.\n\n`;
+            if (app.note) msg += `📌 *Note / Documenti da portare:* ${app.note}\n\n`;
+            msg += `Ci vediamo in studio!`;
+
+            let url = `https://wa.me/`;
+            if (app.telefono) {
+                // Pulisce il numero di telefono
+                let num = app.telefono.replace(/\s+/g, '').replace(/[-()]/g, '');
+                if (!num.startsWith('+') && !num.startsWith('39')) num = '39' + num;
+                url += `${num}?text=${encodeURIComponent(msg)}`;
+            } else {
+                url += `?text=${encodeURIComponent(msg)}`;
+            }
+            window.open(url, '_blank');
+        }
+
+        function renderAppuntamenti() {
+            const container = document.getElementById('lista-appuntamenti');
+            const badge = document.getElementById('badge-totale');
+            
+            container.innerHTML = '';
+            badge.textContent = `${appuntamenti.length} totali`;
+
+            if (appuntamenti.length === 0) {
+                container.innerHTML = `
+                    <div class="bg-white p-6 text-center text-slate-400 rounded-2xl border border-slate-200">
+                        <i class="fa-regular fa-calendar-xmark text-3xl mb-2 text-slate-300"></i>
+                        <p class="text-xs">Nessun appuntamento registrato.</p>
+                    </div>`;
+                return;
+            }
+
+            // Ordina per data e ora
+            appuntamenti.sort((a, b) => new Date(a.data + 'T' + a.ora) - new Date(b.data + 'T' + b.ora));
+
+            appuntamenti.forEach(app => {
+                const card = document.createElement('div');
+                card.className = `bg-white p-4 rounded-2xl border shadow-sm transition ${app.completato ? 'opacity-60 bg-slate-50 border-slate-200' : 'border-slate-300'}`;
+                
+                const badgePag = app.statoPagamento === 'Pagato' 
+                    ? 'bg-emerald-100 text-emerald-800 border-emerald-300' 
+                    : 'bg-amber-100 text-amber-800 border-amber-300';
+
+                card.innerHTML = `
+                    <div class="flex justify-between items-start gap-2 mb-2">
+                        <div class="flex items-center gap-1.5 flex-wrap">
+                            <span class="text-[11px] font-bold px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 border border-blue-200">${app.tipo}</span>
+                            <button onclick="togglePagamento(${app.id})" class="text-[11px] font-bold px-2 py-0.5 rounded-md border transition ${badgePag}">
+                                <i class="fa-solid fa-coins mr-1"></i>${app.statoPagamento}
+                            </button>
+                        </div>
+                        <div class="text-xs font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">
+                            ${app.data} | ${app.ora}
+                        </div>
+                    </div>
+
+                    <div class="my-2">
+                        <h3 class="font-bold text-slate-900 text-base ${app.completato ? 'line-through text-slate-500' : ''}">${app.cliente}</h3>
+                        ${app.telefono ? `<p class="text-xs text-slate-500 mt-0.5"><i class="fa-solid fa-phone text-[10px] mr-1"></i>${app.telefono}</p>` : ''}
+                        ${app.note ? `<p class="text-xs text-slate-600 mt-1 bg-slate-50 p-2 rounded-lg border border-slate-100"><i class="fa-regular fa-comment-dots mr-1"></i>${app.note}</p>` : ''}
+                    </div>
+
+                    <!-- PULSANTI D'AZIONE TOUCH -->
+                    <div class="flex items-center justify-between pt-2 border-t border-slate-100 mt-3">
+                        <div class="flex items-center gap-2">
+                            <!-- GOOGLE CALENDAR -->
+                            <a href="${generaGoogleCalendarUrl(app)}" target="_blank" class="flex items-center gap-1 bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-blue-200 transition">
+                                <i class="fa-solid fa-calendar-plus"></i> Google Calendar
+                            </a>
+                            
+                            <!-- WHATSAPP PROMEMORIA -->
+                            <button onclick='apriWhatsApp(${JSON.stringify(app).replace(/'/g, "&#39;")})' class="flex items-center gap-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-emerald-200 transition">
+                                <i class="fa-brands fa-whatsapp text-sm"></i> WhatsApp
+                            </button>
+                        </div>
+
+                        <div class="flex items-center gap-1">
+                            <button onclick="toggleCompletato(${app.id})" title="Completato" class="p-2 text-slate-400 hover:text-emerald-600 active:scale-95 transition">
+                                <i class="fa-solid ${app.completato ? 'fa-rotate-left' : 'fa-circle-check text-xl'}"></i>
+                            </button>
+                            <button onclick="eliminaAppuntamento(${app.id})" title="Elimina" class="p-2 text-slate-400 hover:text-red-600 active:scale-95 transition">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function togglePagamento(id) {
+            appuntamenti = appuntamenti.map(a => {
+                if (a.id === id) a.statoPagamento = a.statoPagamento === 'Pagato' ? 'Da Pagare' : 'Pagato';
+                return a;
+            });
+            aggiornaEGuarda();
+        }
+
+        function toggleCompletato(id) {
+            appuntamenti = appuntamenti.map(a => {
+                if (a.id === id) a.completato = !a.completato;
+                return a;
+            });
+            aggiornaEGuarda();
+        }
+
+        function eliminaAppuntamento(id) {
+            if (confirm("Vuoi eliminare questo appuntamento?")) {
+                appuntamenti = appuntamenti.filter(a => a.id !== id);
+                aggiornaEGuarda();
+            }
+        }
+
+        function esportaCSV() {
+            if (appuntamenti.length === 0) return alert("Nessun appuntamento da esportare.");
+            let csv = "Cliente;Telefono;Data;Ora;Tipo;Stato Pagamento;Note\n";
+            appuntamenti.forEach(a => {
+                csv += `"${a.cliente}";"${a.telefono || ''}";"${a.data}";"${a.ora}";"${a.tipo}";"${a.statoPagamento}";"${a.note || ''}"\n`;
+            });
+            const blob = new Blob(["\ufeff" + csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = `Appuntamenti_Ufficio_Montella.csv`;
+            link.click();
+        }
+
+        function aggiornaEGuarda() {
+            localStorage.setItem('ufficio_montella_app', JSON.stringify(appuntamenti));
+            renderAppuntamenti();
+        }
+
+        renderAppuntamenti();
+    </script>
+</body>
+</html>
